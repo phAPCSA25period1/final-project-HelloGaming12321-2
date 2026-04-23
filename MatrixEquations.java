@@ -28,18 +28,66 @@ public class MatrixEquations {
         }
         return matrix;
     }
-    public static double[][] Transpose(double[][] matrix){
-        MatrixManipulation.FlipColumns(matrix);
-        MatrixManipulation.FlipRows(matrix);
-        return matrix;
-    }
-    public static Double inverse(double[][] matrix){
-        if(Determinant(matrix) == 0){
+    public static double[][] inverseMatrix(double[][] matrix){
+        Double determinant = determinant(matrix);
+        if (determinant == null || determinant == 0){
+            System.out.println("There is no inverse matrix");
             return null;
         }
-        return matrix;
+        else{
+            return (MatrixManipulation.matrixMultiplication(adjointMatrix(matrix), 1 / determinant));
+        }
     }
-    public static Double Determinant(double[][] matrix){
+    public static double[][] cofactorMatrix(double[][] matrix){
+        if(matrix.length != matrix[0].length){
+            System.out.println("There is no cofactor matrix");
+            return null;
+        }
+        double[][] determinantMatrix = new double[matrix.length - 1][matrix[0].length - 1];
+        double[][] cofactorMatrix = new double[matrix.length][matrix[0].length];
+        for(int i = 0; i < matrix.length; i++){
+            for(int j = 0; j < matrix[0].length; j++){
+                for(int k = 0; k < matrix.length - 1; k++){
+                    for(int l = 0; l < matrix[0].length - 1; l++){
+                        if(k < i && l < j){
+                            determinantMatrix[k][l] = matrix[k][l];
+                        }
+                        else if(k >= i && l < j){
+                            determinantMatrix[k][l] = matrix[k + 1][l];
+                        }
+                        else if(k < i && l >= j){
+                            determinantMatrix[k][l] = matrix[k][l + 1];
+                        }
+                        else{
+                            determinantMatrix[k][l] = matrix[k + 1][l + 1];
+                        }
+                    }
+                }
+                cofactorMatrix[i][j] = determinant(determinantMatrix);
+                if((i + j) % 2 == 1){
+                    cofactorMatrix[i][j] *= -1;
+                }
+            }
+        }
+        return cofactorMatrix;
+    }
+    public static double[][] transposeMatrix(double[][] matrix){
+        double[][] transposeMatrix = new double[matrix[0].length][matrix.length];
+        for(int i = 0; i < transposeMatrix.length; i++){
+            for(int j = 0; j < transposeMatrix[0].length; j++){
+                transposeMatrix[i][j] = matrix[j][i];
+            }
+        }
+        return transposeMatrix;
+    }
+    public static double[][] adjointMatrix(double[][] matrix){
+        if(matrix.length != matrix[0].length){
+            System.out.println("There is no adjoint matrix");
+            return null;
+        }
+        return transposeMatrix(cofactorMatrix(matrix));
+    }
+    public static Double determinant(double[][] matrix){
         double determinant = 0;
         if(matrix.length != matrix[0].length){
             System.out.println("There is no determinant");
@@ -56,10 +104,10 @@ public class MatrixEquations {
         else{
             for(int i = 0; i < matrix.length; i++){
                 if(i % 2 == 0){
-                    determinant += (matrix[0][i] * Determinant(MatrixManipulation.RemoveRow(MatrixManipulation.RemoveColumn(matrix, i) , 0)));
+                    determinant += (matrix[0][i] * determinant(MatrixManipulation.RemoveRow(MatrixManipulation.RemoveColumn(matrix, i) , 0)));
                 }
                 else{
-                    determinant -= (matrix[0][i] * Determinant(MatrixManipulation.RemoveRow(MatrixManipulation.RemoveColumn(matrix, i) , 0)));
+                    determinant -= (matrix[0][i] * determinant(MatrixManipulation.RemoveRow(MatrixManipulation.RemoveColumn(matrix, i) , 0)));
                 }
             }
             return determinant;

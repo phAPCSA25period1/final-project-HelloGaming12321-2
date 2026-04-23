@@ -1,15 +1,15 @@
 public class LinearAlgebraCalculator {
     public static void main(String[] args) {
         double[][] testMatrix = {
-            { 0,  0,  0,  2,  4, -2,  8},
-            { 0,  0,  0,  0,  0,  0,  0},
-            { 1,  3,  0,  2,  1,  4,  5},
-            { 2,  6,  0,  4,  2,  8, 10},
-            { 0,  2,  0,  4,  6, -2,  4},
-            { 0,  0,  0,  0,  0,  5, 10},
-            {-1, -3,  0, -2, -1, -4, -5}
+            {2, 2, 3, 4, 5, 6, 7},
+            {1, 3, 3, 4, 5, 6, 7},
+            {1, 2, 4, 4, 5, 6, 7},
+            {1, 2, 3, 5, 5, 6, 7},
+            {1, 2, 3, 4, 6, 6, 7},
+            {1, 2, 3, 4, 5, 7, 7},
+            {1, 2, 3, 4, 5, 6, 8}
         };
-        printMatrix(MatrixEquations.rref(testMatrix));
+        printMatrix(MatrixEquations.inverseMatrix(testMatrix));
     }
    public static void printMatrix(double[][] matrix) {
     //Written by AI

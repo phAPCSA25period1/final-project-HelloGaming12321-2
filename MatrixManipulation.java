@@ -23,6 +23,14 @@ public class MatrixManipulation {
             matrix[row][i] *= scalar;
         }
     }
+    public static double[][] matrixMultiplication(double[][] matrix, double scalar){
+        double[][] multipliedMatrix = new double[matrix.length][matrix[0].length];
+        for(int i = 0; i < matrix.length; i++){
+            multipliedMatrix[i] = matrix[i];
+            RowMultiplication(multipliedMatrix, i, scalar);
+        }
+        return multipliedMatrix;
+    }
     public static void RowAddition(double[][] matrix, int rowOne, int rowTwo, double scalar){
         for(int i = 0; i < matrix[rowOne].length; i++){
             matrix[rowOne][i] += matrix[rowTwo][i] * scalar;
