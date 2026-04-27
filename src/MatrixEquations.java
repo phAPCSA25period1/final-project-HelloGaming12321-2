@@ -1,36 +1,41 @@
 public class MatrixEquations {
+    private static double EPSILON = 1e-9;
     public static double[][] rref(double[][] matrix){
+        double[][] rrefMatrix = new double[matrix.length][matrix[0].length];
         for(int i = 0; i < matrix.length; i++){
-            for(int j = i; j < matrix.length; j++){
-                if(matrix[j][i] != 0){
-                    MatrixManipulation.RowSwitching(matrix, j, i);
-                }
-            }
-            for(int j = 0; j < matrix.length; j++){
-                if(j != i && matrix[i][i] != 0 && matrix[j][i] != 0){
-                    MatrixManipulation.RowAddition(matrix, j, i, -matrix[j][i] / matrix[i][i]);
-                }
-            }
-            if(matrix[i][i] != 0){
-                MatrixManipulation.RowMultiplication(matrix, i, 1 / matrix[i][i]);
+            for(int j = 0; j < matrix[0].length; j++){
+                rrefMatrix[i][j] = matrix[i][j];
             }
         }
-        for(int i = 0; i < matrix.length; i++){
-            int nonZeroCounter = 0;
-            for(int j = 0; j < matrix[0].length && nonZeroCounter == 0; j++){
-                if(matrix[i][j] != 0){
-                    nonZeroCounter++;
+        int skippedPivotCounter = 0;
+        int columnNonZeroCounter = 0;
+        for(int i = 0; i < rrefMatrix[0].length && i - skippedPivotCounter < rrefMatrix.length; i++){
+            for(int j = i; j - skippedPivotCounter < rrefMatrix.length; j++){
+                if(!(Math.abs(rrefMatrix[j - skippedPivotCounter][i]) < EPSILON)){
+                    MatrixManipulation.RowSwitching(rrefMatrix, j - skippedPivotCounter, i - skippedPivotCounter);
+                    columnNonZeroCounter++;
                 }
             }
-            if(nonZeroCounter == 0){
-                MatrixManipulation.MoveToBack(matrix, i + 1);
+            if(columnNonZeroCounter == 0){
+                skippedPivotCounter++;
             }
+            else{
+                for(int j = 0; j < rrefMatrix.length; j++){
+                    if(j != i - skippedPivotCounter && !(Math.abs(rrefMatrix[j][i]) < EPSILON) && !(Math.abs(rrefMatrix[i - skippedPivotCounter][i]) < EPSILON)){
+                        MatrixManipulation.RowAddition(rrefMatrix, j, i - skippedPivotCounter, -rrefMatrix[j][i] / rrefMatrix[i - skippedPivotCounter][i]);
+                    }
+                }
+                if(!(Math.abs(rrefMatrix[i - skippedPivotCounter][i]) < EPSILON)){
+                    MatrixManipulation.RowMultiplication(rrefMatrix, i - skippedPivotCounter, 1.0 / rrefMatrix[i - skippedPivotCounter][i]);
+                }
+            }
+            columnNonZeroCounter = 0;
         }
-        return matrix;
+        return rrefMatrix;
     }
     public static double[][] inverseMatrix(double[][] matrix){
         Double determinant = determinant(matrix);
-        if (determinant == null || determinant == 0){
+        if (determinant == null || Math.abs(determinant) < EPSILON){
             System.out.println("There is no inverse matrix");
             return null;
         }
