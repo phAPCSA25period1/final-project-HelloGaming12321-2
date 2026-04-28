@@ -30,8 +30,8 @@ public class LinearAlgebraCalculator {
                 if (inv != null) printMatrix(inv);
                 break;
             case 4:
-                System.out.println("Rank: " + MatrixEquations.Rank(myMatrix));
-                System.out.println("Nullity: " + MatrixEquations.Nullity(myMatrix));
+                System.out.println("Rank: " + MatrixEquations.rank(myMatrix));
+                System.out.println("Nullity: " + MatrixEquations.nullity(myMatrix));
                 break;
             default:
                 System.out.println("Invalid selection.");

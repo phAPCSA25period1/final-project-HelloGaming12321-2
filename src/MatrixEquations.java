@@ -118,16 +118,35 @@ public class MatrixEquations {
             return determinant;
         }
     }
-    public void Eigenvalues(){
-
+    public static int rank(double[][] matrix){
+        int rank = 0;
+        int nonZeroCounter = 0;
+        double[][] rrefMatrix = rref(matrix);
+        for(int i = 0; i < rrefMatrix.length; i++){
+            for(int j = 0; j < rrefMatrix[0].length; j++){
+                if(!(Math.abs(rrefMatrix[i][j]) < EPSILON)){
+                    nonZeroCounter++;
+                }
+            }
+            if(nonZeroCounter != 0){
+                rank++;
+                nonZeroCounter = 0;
+            }
+        }
+        return rank;
     }
-    public void Eigenvectors(){
-
+    public static int nullity(double[][] matrix){
+        int nullity = (matrix[0].length - rank(matrix));
+        return nullity;
     }
-    public void Rank(){
+    public static Double[] eigenvalues(){
+        Double[] eigenvalues = new Double[2];
 
+        return eigenvalues;
     }
-    public void Nullity(){
+    public static double[][] eigenvectors(){
+        double[][] eigenvectors = new double[2][3];
 
+        return eigenvectors;
     }
 }
