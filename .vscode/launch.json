@@ -3,6 +3,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "LinearAlgebraGUI",
+      "request": "launch",
+      "mainClass": "LinearAlgebraGUI",
+      "projectName": "final-project-HelloGaming12321-2_ece6f682"
+    },
+    {
+      "type": "java",
       "name": "LinearAlgebraCalculator",
       "request": "launch",
       "mainClass": "LinearAlgebraCalculator",
