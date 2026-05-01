@@ -31,11 +31,10 @@ public class LinearAlgebraGUI extends JFrame {
 
     public LinearAlgebraGUI() {
         setTitle("Linear Algebra Calculator");
-        setSize(500, 600);
+        setSize(500, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Output Display Area
         displayArea = new JTextArea();
         displayArea.setEditable(false);
         displayArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -43,28 +42,29 @@ public class LinearAlgebraGUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(displayArea);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Input Field (Thin cursor by default in JTextField)
         inputField = new JTextField();
         inputField.setFont(new Font("Monospaced", Font.PLAIN, 16));
         inputField.setMargin(new Insets(5, 5, 5, 5));
-        inputField.addActionListener(e -> processInputAndClear()); // Triggers on Enter key
+        inputField.addActionListener(e -> processInputAndClear());
         add(inputField, BorderLayout.NORTH);
 
-        // Button Panel
-        JPanel buttonPanel = new JPanel(new GridLayout(6, 4, 5, 5));
+        // Updated grid to 7x4 to fit the comma, decimal, and edit buttons
+        JPanel buttonPanel = new JPanel(new GridLayout(7, 4, 5, 5));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         String[] buttons = {
-            "rref ", "inv ", "det ", "rank ",
-            "nullity ", "eigval ", "eigvec ", "ans",
-            "7", "8", "9", "[",
-            "4", "5", "6", "]",
-            "1", "2", "3", ";",
-            "0", " ", "=", "Enter"
+                "rref ", "inv ", "det ", "rank ",
+                "nullity ", "eigval ", "eigvec ", "ans",
+                "7", "8", "9", "[",
+                "4", "5", "6", "]",
+                "1", "2", "3", ";",
+                "0", ".", ",", "=",
+                "Clear", "Del", " ", "Enter"
         };
 
         for (String text : buttons) {
-            JButton button = new JButton(text.trim());
+            JButton button = new JButton(text.trim().isEmpty() ? "Space" : text.trim());
+            button.setActionCommand(text); // Preserve original string with spaces
             button.setFont(new Font("Arial", Font.BOLD, 14));
             button.addActionListener(new ButtonClickListener(text));
             buttonPanel.add(button);
@@ -73,7 +73,7 @@ public class LinearAlgebraGUI extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
 
         display("System Initialized.\nFormat: <command> <matrix> OR <var> = <command> <matrix>");
-        display("Example: A = [1 2; 3 4]\n---------------------------------------------------------");
+        display("Example: A = [1, 2; 3, 4]\n---------------------------------------------------------");
     }
 
     private class ButtonClickListener implements ActionListener {
@@ -85,8 +85,19 @@ public class LinearAlgebraGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getActionCommand().equals("Enter")) {
+            String cmd = e.getActionCommand().trim();
+
+            if (cmd.equals("Enter")) {
                 processInputAndClear();
+            } else if (cmd.equals("Clear")) {
+                inputField.setText("");
+                inputField.requestFocusInWindow();
+            } else if (cmd.equals("Del")) {
+                String currentText = inputField.getText();
+                if (!currentText.isEmpty()) {
+                    inputField.setText(currentText.substring(0, currentText.length() - 1));
+                }
+                inputField.requestFocusInWindow();
             } else {
                 inputField.setText(inputField.getText() + textToAppend);
                 inputField.requestFocusInWindow();
@@ -96,7 +107,8 @@ public class LinearAlgebraGUI extends JFrame {
 
     private void processInputAndClear() {
         String input = inputField.getText().trim();
-        if (input.isEmpty()) return;
+        if (input.isEmpty())
+            return;
 
         display("> " + input);
         inputField.setText("");
@@ -158,12 +170,13 @@ public class LinearAlgebraGUI extends JFrame {
 
     private boolean isCommand(String str) {
         return str.equals("rref") || str.equals("inv") || str.equals("det") ||
-               str.equals("rank") || str.equals("nullity") || str.equals("eigval") || str.equals("eigvec");
+                str.equals("rank") || str.equals("nullity") || str.equals("eigval") || str.equals("eigvec");
     }
 
     private double[][] parseMatrix(String input) {
         input = input.replaceAll("\\[|\\]", "").trim();
-        if (input.isEmpty()) return null;
+        if (input.isEmpty())
+            return null;
 
         String[] rows = input.split(";");
         double[][] matrix = new double[rows.length][];
@@ -200,29 +213,32 @@ public class LinearAlgebraGUI extends JFrame {
                 break;
             case "inv":
                 resultMatrix = MatrixEquations.inverseMatrix(matrix);
-                if (resultMatrix == null) throw new IllegalArgumentException("Singular matrix.");
+                if (resultMatrix == null)
+                    throw new IllegalArgumentException("Singular matrix.");
                 break;
             case "det":
                 scalarResult = MatrixEquations.determinant(matrix);
-                if (scalarResult == null) throw new IllegalArgumentException("Matrix must be square.");
+                if (scalarResult == null)
+                    throw new IllegalArgumentException("Matrix must be square.");
                 display(String.format("%.4f", scalarResult));
-                resultMatrix = new double[][]{{scalarResult}};
+                resultMatrix = new double[][] { { scalarResult } };
                 break;
             case "rank":
                 scalarResult = (double) MatrixEquations.rank(matrix);
                 display(String.valueOf(scalarResult.intValue()));
-                resultMatrix = new double[][]{{scalarResult}};
+                resultMatrix = new double[][] { { scalarResult } };
                 break;
             case "nullity":
                 scalarResult = (double) MatrixEquations.nullity(matrix);
                 display(String.valueOf(scalarResult.intValue()));
-                resultMatrix = new double[][]{{scalarResult}};
+                resultMatrix = new double[][] { { scalarResult } };
                 break;
             case "eigval":
                 arrayResult = MatrixEquations.eigenvalues();
                 display(Arrays.toString(arrayResult));
                 resultMatrix = new double[1][arrayResult.length];
-                for(int i = 0; i < arrayResult.length; i++) resultMatrix[0][i] = arrayResult[i] != null ? arrayResult[i] : 0;
+                for (int i = 0; i < arrayResult.length; i++)
+                    resultMatrix[0][i] = arrayResult[i] != null ? arrayResult[i] : 0;
                 break;
             case "eigvec":
                 resultMatrix = MatrixEquations.eigenvectors();
@@ -242,7 +258,8 @@ public class LinearAlgebraGUI extends JFrame {
         for (double[] row : result) {
             sb.append("[ ");
             for (double val : row) {
-                if (Math.abs(val) < 1e-9) val = 0.0;
+                if (Math.abs(val) < 1e-9)
+                    val = 0.0;
                 sb.append(String.format("%8.4f ", val));
             }
             sb.append("]\n");
